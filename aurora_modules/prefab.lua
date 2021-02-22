@@ -1,0 +1,244 @@
+--5.0.2
+
+function AddUpgradeType(upgrade, material)
+  if upgrade then upgrade = string.upper(upgrade) end
+ 
+  local upgrade_type = UPGRADETYPES
+  upgrade_type[upgrade] = material
+
+
+
+  AddPrefabPostInit(material, function(inst)
+    inst:AddComponent("upgrader")
+    inst.components.upgrader.upgradetype = upgrade_type[upgrade]
+
+
+  end)
+
+  AddPlayerPostInit(function(player)
+
+    player:AddTag(material.."_upgradeuser")
+
+  end)
+
+
+end
+
+
+--AddUpgradeType("new", "gears")
+
+
+
+
+
+
+function RecipeDesc(prefab, describe) 
+  if prefab then prefab = string.upper(prefab) end
+ 
+
+  local item_describe = STRINGS.RECIPE_DESC
+  item_describe[prefab] = describe
+
+end
+
+
+
+--RecipeDesc("meat", "spicy")
+
+
+
+
+
+
+function Describe(character, prefab, describe)
+    
+
+  if character and prefab and describe then
+    local Describe_Generic = "GENERIC"
+    local Describe_Lookups = {
+        maxwell = "waxwell",
+        wigfrid = "wathgrithr",
+        wilson = Describe_Generic,
+    }
+
+    if prefab == nil
+    then
+        return
+    end
+    character = string.upper(Describe_Lookups[character] or character or Describe_Generic)
+    prefab = string.upper(prefab)
+    local descriptions = STRINGS.CHARACTERS[character].DESCRIBE
+    descriptions[prefab] = describe
+
+  end
+
+end
+
+
+
+--Describe("wilson", "meat", "eeewww")
+
+
+
+function  NewRecipe(recipe, recipetab, tech, number,atlas)
+
+
+
+
+  if ingredients then
+
+
+    if recipetab then
+      recipetab = string.upper(recipetab)
+    end
+
+    tex = atlas
+
+
+
+    if number == 2 then
+      number = "_TWO"
+    elseif number == 3 then
+      number = "_THREE"
+    elseif number == 4 then
+      number = "_FOUR"
+    end
+
+    if tech then
+      tech = string.upper(tech)..number
+    end
+
+
+
+
+
+    AddRecipe(recipe, ingredients[recipe], 
+      RECIPETABS[recipetab], TECH[tech], nil, nil, nil, nil, nil, 
+      "images/inventoryimages/"..atlas..".xml", ""..tex..".tex" )
+  
+
+  end
+
+
+end
+
+
+
+
+
+
+
+
+
+
+function Name(prefab, name)
+  if prefab then prefab = string.upper(prefab) end
+  local prefab_name = STRINGS.NAMES
+  prefab_name[prefab] = name
+  
+end
+
+
+
+
+
+
+
+
+
+
+function AddMapIcon(prefab, tex, atlas)
+  if not Assets then
+    Assets = {}
+  end
+
+
+  if not atlas then
+    atlas = tex
+  end
+
+
+  table.insert(Assets, Asset("IMAGE", "images/map_icons/"..tex..".tex"))
+  table.insert(Assets, Asset("ATLAS", "images/map_icons/"..atlas..".xml"))
+
+  AddMinimapAtlas("images/map_icons/"..atlas..".xml")
+
+
+  AddPrefabPostInit(prefab, function(inst)
+    inst.entity:AddMiniMapEntity()
+    inst.MiniMapEntity:SetIcon(tex..".tex")  
+  end)
+
+
+  print("Imported "..tex..".tex and "..atlas..".xml")
+
+end
+
+
+
+
+
+
+
+
+
+
+
+function AddInvTex(prefab, tex, atlas)
+  if not Assets then
+    Assets = {}
+  end
+
+
+  if not atlas then
+    atlas = tex
+  end
+
+
+
+  if not inst.components.inventoryitem then inst:AddComponent("inventoryitem") end
+
+
+
+  table.insert(Assets, Asset("IMAGE", "images/inventoryimages/"..tex..".tex"))
+  table.insert(Assets, Asset("ATLAS", "images/inventoryimages/"..atlas..".xml"))
+
+
+
+  AddPrefabPostInit(prefab, function(inst)
+
+    if not inst.components.inventoryitem then inst:AddComponent("inventoryitem") end
+    inst.components.inventoryitem.imagename = tex
+    inst.components.inventoryitem.atlasname = "images/inventoryimages/"..atlas..".xml"
+
+
+  end)
+
+
+  print("Imported "..tex..".tex and "..atlas..".xml")
+
+end
+
+
+
+
+
+
+
+
+function AddPrefab(name)
+  if not PrefabFiles then
+    PrefabFiles = {}
+  end
+
+  table.insert(PrefabFiles, name)
+
+
+
+
+
+end
+
+
+
+
