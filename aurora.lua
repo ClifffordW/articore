@@ -175,7 +175,7 @@ Sanity 200
 
 AddItem("weslyn", "nightsword", 1)
 
-Adds One Dark Sword to character called Weslyn
+Adds One Dark Sword to starting inventory of character called Weslyn
 
 
 ]]
