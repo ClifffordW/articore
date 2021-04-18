@@ -165,6 +165,19 @@ CharacterAbillity("aste", "Is quiet", "has balloons", "is nice") Adds abillities
 AddCharacterSkin("aste", "triumphant", "Asteish", "Is Dark") Creates skin triumphant Asteish for char aste with description "Is Dark"
 
 
+NewStats("weslyn", 150, 120, 200)
+
+Stats of Weslyn get set to 
+Health 150
+Hunger 120
+Sanity 200
+
+
+AddItem("weslyn", "nightsword", 1)
+
+Adds One Dark Sword to character called Weslyn
+
+
 ]]
 
 
