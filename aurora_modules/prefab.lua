@@ -196,7 +196,7 @@ function AddInvTex(prefab, tex, atlas)
 
 
 
-  if not inst.components.inventoryitem then inst:AddComponent("inventoryitem") end
+  
 
 
 
@@ -206,6 +206,14 @@ function AddInvTex(prefab, tex, atlas)
 
 
   AddPrefabPostInit(prefab, function(inst)
+    
+    inst.entity:SetPristine()
+
+    if not GLOBAL.TheWorld.ismastersim then
+        return inst
+    end
+
+
 
     if not inst.components.inventoryitem then inst:AddComponent("inventoryitem") end
     inst.components.inventoryitem.imagename = tex
