@@ -206,12 +206,7 @@ function AddInvTex(prefab, tex, atlas)
   TUNING.STARTING_ITEM_IMAGE_OVERRIDE[prefab] = {image = prefab..".tex", atlas = "images/inventoryimages/"..prefab..".xml"}  
   AddPrefabPostInit(prefab, function(inst)
     
-      if not assets then
-        assets = {}
-      end
 
-      table.insert(assets, Asset("IMAGE", "images/inventoryimages/"..prefab..".tex"))
-      table.insert(assets, Asset("ATLAS", "images/inventoryimages/"..prefab..".xml"))
 
     if not GLOBAL.TheWorld.ismastersim then
         return inst
