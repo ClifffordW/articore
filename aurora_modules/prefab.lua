@@ -196,16 +196,28 @@ function AddInvTex(prefab, tex, atlas)
 
 
 
-  if not inst.components.inventoryitem then inst:AddComponent("inventoryitem") end
+  
 
 
 
-  table.insert(Assets, Asset("IMAGE", "images/inventoryimages/"..tex..".tex"))
-  table.insert(Assets, Asset("ATLAS", "images/inventoryimages/"..atlas..".xml"))
 
 
 
+  TUNING.STARTING_ITEM_IMAGE_OVERRIDE[prefab] = {image = prefab..".tex", atlas = "images/inventoryimages/"..prefab..".xml"}  
   AddPrefabPostInit(prefab, function(inst)
+    
+      if not assets then
+        assets = {}
+      end
+
+      table.insert(assets, Asset("IMAGE", "images/inventoryimages/"..prefab..".tex"))
+      table.insert(assets, Asset("ATLAS", "images/inventoryimages/"..prefab..".xml"))
+
+    if not GLOBAL.TheWorld.ismastersim then
+        return inst
+    end
+
+
 
     if not inst.components.inventoryitem then inst:AddComponent("inventoryitem") end
     inst.components.inventoryitem.imagename = tex
@@ -222,7 +234,37 @@ end
 
 
 
+function AddPrefabLoot(prefab, item, chance)
+  
 
+
+
+
+    LootTables = GLOBAL.LootTables
+    if chance == nil then 
+      chance = 1
+    end
+
+
+    
+
+
+
+
+    AddPrefabPostInit(prefab, function(inst)
+      
+      if not GLOBAL.TheWorld.ismastersim then
+          return inst
+      end
+
+
+
+      inst:DoTaskInTime(3, function()  
+        table.insert(LootTables["shark"], {item, chance})
+      end)
+
+    end)
+end
 
 
 
