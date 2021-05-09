@@ -197,7 +197,8 @@ function AddInvTex(prefab, tex, atlas)
 
 
   
-
+  table.insert(Assets, Asset("IMAGE", "images/inventoryimages/"..tex..".tex"))
+  table.insert(Assets, Asset("ATLAS", "images/inventoryimages/"..atlas..".xml"))
 
 
 

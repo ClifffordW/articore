@@ -72,6 +72,23 @@ atlas is the recipe texture. List of techs below
 crafting tabs are here too
 
 
+
+
+
+ingredients =
+{
+
+    rockjawsword =
+    {
+      Ingredient("fishmeat", 2),
+      --Ingredient("rocks", 15),  
+      Ingredient("sharkscale", 1, "images/inventoryimages/sharkscale.xml", nil, "sharkscale.tex")
+    }
+}
+
+
+
+
 Name("meat", "Guess what. Meat") Adds name to a prefab
 
 
