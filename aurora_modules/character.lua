@@ -39,19 +39,60 @@ function AddCharacter(prefab, name, gender, title,quote, map, speech)
 
 end
 
-function AddCharacterSkin(prefab, skin, name, description)
+function AddCharacterSkin(prefab, skin, name, description, test)
+  local _G = GLOBAL
+  local PREFAB_SKINS = _G.PREFAB_SKINS
+  local PREFAB_SKINS_IDS = _G.PREFAB_SKINS_IDS
+  local SKIN_AFFINITY_INFO = GLOBAL.require("skin_affinity_info")
 
-  AddPrefab(skin)
   
 
-  charname = prefab.."_"..skin
 
+  charname = prefab.."_"..skin
+  AddPrefab(charname)
+ 
 
   STRINGS.SKIN_NAMES[charname] = name
   STRINGS.SKIN_DESCRIPTIONS[charname] = description
   
+  AddDynamic(charname)
+
+  if not PREFAB_SKINS[prefab] then
+    PREFAB_SKINS[prefab] = {}
+    SKIN_AFFINITY_INFO[prefab] = {}
+  end
 
 
+  if test then 
+    AddClassPostConstruct("screens/redux/multiplayermainscreen", function(self)
+      self.inst:DoTaskInTime(FRAMES, function()
+
+        local online = TheNet:IsOnlineMode() and not TheFrontEnd:GetIsOfflineMode()
+
+
+        local ThankYouPopup = require "screens/thankyoupopup"
+        local SkinGifts = require("skin_gifts")
+        
+        if online then
+
+            TheFrontEnd:PushScreen(ThankYouPopup({{ item = string.lower(charname), item_id = 0, gifttype = SkinGifts.types[charname] or "DEFAULT" }}))
+        end
+      end)
+    end)
+
+
+
+    prefab = "wilson" 
+  end
+  table.insert(PREFAB_SKINS[prefab], charname)
+  table.insert(SKIN_AFFINITY_INFO[prefab], charname)
+
+
+end
+
+
+function AddSkinCollection(prefab, name)
+  STRINGS.SKIN_TAG_CATEGORIES.COLLECTION[string.upper(prefab)] = name  
 end
 
 
