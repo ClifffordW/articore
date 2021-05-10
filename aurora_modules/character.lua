@@ -39,7 +39,7 @@ function AddCharacter(prefab, name, gender, title,quote, map, speech)
 
 end
 
-function AddCharacterSkin(prefab, skin, name, description, test)
+function AddCharacterSkin(prefab, skin, name, description, test, none_skin)
   local _G = GLOBAL
   local PREFAB_SKINS = _G.PREFAB_SKINS
   local PREFAB_SKINS_IDS = _G.PREFAB_SKINS_IDS
@@ -48,14 +48,16 @@ function AddCharacterSkin(prefab, skin, name, description, test)
   
 
 
-  charname = prefab.."_"..skin
+  local charname = prefab.."_"..skin
   AddPrefab(charname)
  
 
   STRINGS.SKIN_NAMES[charname] = name
   STRINGS.SKIN_DESCRIPTIONS[charname] = description
   
-  AddDynamic(charname)
+  if not none_skin then
+    AddDynamic(charname)
+  end
 
   if not PREFAB_SKINS[prefab] then
     PREFAB_SKINS[prefab] = {}
@@ -133,5 +135,3 @@ function AddItem(prefab, item, number)
 	for i=1,number do table.insert(TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT[prefab], item) end
 
 end
-
-

@@ -15,6 +15,7 @@ modimport(aurora.."game_assets")
 modimport(aurora.."menu")
 modimport(aurora.."prefab")
 modimport(aurora.."custom")
+modimport(aurora.."skins")
 
 modimport(aurora.."character")
 
@@ -70,23 +71,6 @@ Describe("wilson","gears","Hey max move your gears") Adds quote to item gears sa
 NewRecipe("meat", "survival", "science", 3, "meat") Creates recipe meat in tab survival requiring tech science 3
 atlas is the recipe texture. List of techs below
 crafting tabs are here too
-
-
-
-
-
-ingredients =
-{
-
-    rockjawsword =
-    {
-      Ingredient("fishmeat", 2),
-      --Ingredient("rocks", 15),  
-      Ingredient("sharkscale", 1, "images/inventoryimages/sharkscale.xml", nil, "sharkscale.tex")
-    }
-}
-
-
 
 
 Name("meat", "Guess what. Meat") Adds name to a prefab
