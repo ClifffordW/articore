@@ -1,5 +1,5 @@
 
-print("Aurora Worldgen")
+print("Cobalt Worldgen")
 print("------------------------------")
 
 --AddLayout first name of layout then filename
@@ -294,6 +294,6 @@ function ChangeSpawn(startloc, location)
 end
 
 red_gen_imported = true
-print("Worldgen version of Aurora Loaded..")
+print("Worldgen version of Cobalt Loaded..")
 print("Version 1.0.0")
 print("Author: Clifford W.")

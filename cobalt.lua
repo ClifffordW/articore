@@ -1,28 +1,28 @@
 
-local aurora = "aurora/aurora_modules/"
+local cobalt = "cobalt/cobalt_modules/"
 
 
 
 --Change stuff in it
-modimport(aurora.."aurora_init")
+modimport(cobalt.."cobalt_init")
 
 
-modimport(aurora.."required")
+modimport(cobalt.."required")
 
-modimport(aurora.."preinit")
+modimport(cobalt.."preinit")
 
-modimport(aurora.."game_assets")
-modimport(aurora.."menu")
-modimport(aurora.."prefab")
-modimport(aurora.."custom")
-modimport(aurora.."skins")
+modimport(cobalt.."game_assets")
+modimport(cobalt.."menu")
+modimport(cobalt.."prefab")
+modimport(cobalt.."custom")
+modimport(cobalt.."skins")
 
-modimport(aurora.."character")
+modimport(cobalt.."character")
 
-modimport(aurora.."modutil")
+modimport(cobalt.."modutil")
 
 
-modimport(aurora.."postinit")
+modimport(cobalt.."postinit")
 
 
 
@@ -46,7 +46,7 @@ modimport(aurora.."postinit")
     },
 
 
-    be sure to put it before modimport("aurora/aurora")
+    be sure to put it before modimport("cobalt/cobalt")
 
 ]]
 
