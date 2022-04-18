@@ -1,28 +1,30 @@
 
-local cobalt = "cobalt/cobalt_modules/"
+local path = "cobalt/cobalt_modules/"
+
+local modules =
+{
+    "cobalt_init",
+    "required",
+    "preinit",
+    
+    "game_assets",
+    
+    "menu",
+    "prefab",
+    "custom",
+    "skins",
+    "character",
+    
+    
+    "modutil",
+
+    "postinit",
+}
 
 
 
 --Change stuff in it
-modimport(cobalt.."cobalt_init")
-
-
-modimport(cobalt.."required")
-
-modimport(cobalt.."preinit")
-
-modimport(cobalt.."game_assets")
-modimport(cobalt.."menu")
-modimport(cobalt.."prefab")
-modimport(cobalt.."custom")
-modimport(cobalt.."skins")
-
-modimport(cobalt.."character")
-
-modimport(cobalt.."modutil")
-
-
-modimport(cobalt.."postinit")
+for k,v in pairs(modules) do modimport(path..""..v) end
 
 
 
