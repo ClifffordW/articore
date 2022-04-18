@@ -1,13 +1,15 @@
 
 --Working
-function AddCharacter(prefab, name, gender, title,quote, map, speech)
-  AddPrefab(prefab)
+function AddCharacter(character, name, gender, title, quote, map, speech, addprefabs)
+  if addprefabs then
+    AddPrefab(character)
 
 
 
-  AddPrefab(prefab.."_none")
+    AddPrefab(character.."_none")
+  end
 
-  charname = prefab.."_none"
+  charname = character.."_none"
 
 
   local gender = string.upper(gender)
@@ -15,9 +17,9 @@ function AddCharacter(prefab, name, gender, title,quote, map, speech)
 
 
 
-  STRINGS.CHARACTER_NAMES[prefab] = name
-  STRINGS.CHARACTER_TITLES[prefab] = title
-  STRINGS.CHARACTER_QUOTES[prefab] = "\""..quote.."\""
+  STRINGS.CHARACTER_NAMES[character] = name
+  STRINGS.CHARACTER_TITLES[character] = title
+  STRINGS.CHARACTER_QUOTES[character] = "\""..quote.."\""
   
   --STRINGS.CHARACTER_ABOUTME[prefab] = about
 
@@ -26,20 +28,29 @@ function AddCharacter(prefab, name, gender, title,quote, map, speech)
   STRINGS.SKIN_NAMES[charname] = name
 
 
-  AddMinimapAtlas("images/map_icons/"..prefab..".xml")
+  AddMinimapAtlas("images/map_icons/"..character..".xml")
 
-  local prefab_speech = string.upper(prefab)
+  local prefab_speech = string.upper(character)
 
   STRINGS.CHARACTERS[prefab_speech] = require("speech_"..speech)
 
 
-  AddModCharacter(prefab, gender)
+  AddModCharacter(character, gender)
 
 
 
 end
 
-function AddCharacterSkin(prefab, skin, name, description, test, none_skin)
+
+function AddAboutMe(character, text)
+  STRINGS.CHARACTER_ABOUTME[character] = text
+end
+
+
+
+
+
+function AddCharacterSkin(character, skin, name, description, test, none_skin)
   local _G = GLOBAL
   local PREFAB_SKINS = _G.PREFAB_SKINS
   local PREFAB_SKINS_IDS = _G.PREFAB_SKINS_IDS
@@ -48,7 +59,7 @@ function AddCharacterSkin(prefab, skin, name, description, test, none_skin)
   
 
 
-  local charname = prefab.."_"..skin
+  local charname = character.."_"..skin
   AddPrefab(charname)
  
 
@@ -59,9 +70,9 @@ function AddCharacterSkin(prefab, skin, name, description, test, none_skin)
     AddDynamic(charname)
   end
 
-  if not PREFAB_SKINS[prefab] then
-    PREFAB_SKINS[prefab] = {}
-    SKIN_AFFINITY_INFO[prefab] = {}
+  if not PREFAB_SKINS[character] then
+    PREFAB_SKINS[character] = {}
+    SKIN_AFFINITY_INFO[character] = {}
   end
 
 
@@ -86,22 +97,22 @@ function AddCharacterSkin(prefab, skin, name, description, test, none_skin)
 
     prefab = "wilson" 
   end
-  table.insert(PREFAB_SKINS[prefab], charname)
-  table.insert(SKIN_AFFINITY_INFO[prefab], charname)
+  table.insert(PREFAB_SKINS[character], charname)
+  table.insert(SKIN_AFFINITY_INFO[character], charname)
 
 
 end
 
 
-function AddSkinCollection(prefab, name)
-  STRINGS.SKIN_TAG_CATEGORIES.COLLECTION[string.upper(prefab)] = name  
+function AddSkinCollection(character, name)
+  STRINGS.SKIN_TAG_CATEGORIES.COLLECTION[string.upper(character)] = name  
 end
 
 
 
 --Working
-function CharacterAbillity(prefab, first, second, third)
-  STRINGS.CHARACTER_DESCRIPTIONS[prefab] = "*"..first.."\n*"..second.."\n*"..third
+function CharacterAbillity(character, first, second, third)
+  STRINGS.CHARACTER_DESCRIPTIONS[character] = "*"..first.."\n*"..second.."\n*"..third
 
 end
 
@@ -110,28 +121,28 @@ end
 
 
 
-function NewStats(prefab, health, hunger, sanity)
+function NewStats(character, health, hunger, sanity)
   
   
-  TUNING[string.upper(prefab).."_HEALTH"] = health
-  TUNING[string.upper(prefab).."_HUNGER"] = hunger
-  TUNING[string.upper(prefab).."_SANITY"] = sanity
+  TUNING[string.upper(character).."_HEALTH"] = health
+  TUNING[string.upper(character).."_HUNGER"] = hunger
+  TUNING[string.upper(character).."_SANITY"] = sanity
 
 end
 
 
 
-function AddItem(prefab, item, number)
-	prefab = string.upper(prefab)
+function AddItem(character, item, number)
+	prefab = string.upper(character)
 	if number == nil then 
 		number = 1
 	end
 
 
-	TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT[prefab] = TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT[prefab] or {} 
+	TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT[character] = TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT[character] or {} 
 
 
 
-	for i=1,number do table.insert(TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT[prefab], item) end
+	for i=1,number do table.insert(TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT[character], item) end
 
 end

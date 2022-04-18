@@ -167,6 +167,7 @@ CharacterAbillity("aste", "Is quiet", "has balloons", "is nice") Adds abillities
 
 AddCharacterSkin("aste", "triumphant", "Asteish", "Is Dark") Creates skin triumphant Asteish for char aste with description "Is Dark"
 
+AddAboutMe(prefab, text) 
 
 NewStats("weslyn", 150, 120, 200)
 
