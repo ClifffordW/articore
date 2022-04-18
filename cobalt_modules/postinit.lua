@@ -1,5 +1,5 @@
 if load_note == true then
-	LoadedAurora()
+	LoadedCobalt()
 end
 
 
