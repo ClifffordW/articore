@@ -66,7 +66,7 @@ end
 
 
 
-function AddTex(tex, atlas)
+function AddTex(tex, atlas, inv)
   if not Assets then
     Assets = {}
   end
@@ -76,9 +76,13 @@ function AddTex(tex, atlas)
     atlas = tex
   end
 
-
-  table.insert(Assets, Asset("IMAGE", "images/"..tex..".tex"))
-  table.insert(Assets, Asset("ATLAS", "images/"..atlas..".xml"))
+  if not inv then
+    table.insert(Assets, Asset("IMAGE", "images/"..tex..".tex"))
+    table.insert(Assets, Asset("ATLAS", "images/"..atlas..".xml"))
+  else
+    table.insert(Assets, Asset("IMAGE", "images/inventoryimages/"..tex..".tex"))
+    table.insert(Assets, Asset("ATLAS", "images/inventoryimages/"..atlas..".xml"))
+  end
 
 
   print("Imported "..tex..".tex and "..atlas..".xml")

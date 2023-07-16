@@ -1,6 +1,6 @@
 init = "init/"
 
-function LoadedCobalt()
+function LoadedArticore()
 
 
   branch = string.upper(GLOBAL.BRANCH)
@@ -11,11 +11,11 @@ function LoadedCobalt()
 
 
 		print("----------------------")
-		print("Cobalt Modules Loaded")
-		print("Cobalt API Loaded..")
+		print("Articore Modules Loaded")
+		print("Articore API Loaded..")
 
 		print("----------------------")
-		print("Version 1.0")
+		print("Version 3.0")
 		print("Author: Clifford W.")
 		print("----------------------")
     
@@ -29,11 +29,11 @@ function LoadedCobalt()
 
       self.inst:DoTaskInTime(1.5, function(self)
 
-        if not self.cobalt_loaded then
+        if not self.articore_loaded then
             TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/Together_HUD/collectionscreen/mysterybox/intro","loaded")
             TheFrontEnd:GetSound():SetParameter("FEMusic", "fade", 1)
             --TheFrontEnd:GetSound():PlaySound("dontstarve/together_FE/portal_idle_vines", "FEPortalSFX")
-            self.cobalt_loaded = true
+            self.articore_loaded = true
         end
 
 

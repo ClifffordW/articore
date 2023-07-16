@@ -1,9 +1,9 @@
 
-local path = "cobalt/cobalt_modules/"
+local path = "articore/articore_modules/"
 
 local modules =
 {
-    "cobalt_init",
+    "articore_init",
     "required",
     "preinit",
     
@@ -48,7 +48,7 @@ for k,v in pairs(modules) do modimport(path..""..v) end
     },
 
 
-    be sure to put it before modimport("cobalt/cobalt")
+    be sure to put it before modimport("articore/articore")
 
 ]]
 
