@@ -194,3 +194,48 @@ function AddItem(character, item, number)
 	for i=1,number do table.insert(TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT[character], item) end
 
 end
+
+
+
+function AddLobbyTheme(charsel)
+
+  AddClassPostConstruct("screens/redux/lobbyscreen", function(self)
+    if not charsel then return end
+
+    local root
+    local old_character
+    local old_OnUpdate = self.OnUpdate
+    self.OnUpdate = function(self, ...)
+      old_OnUpdate(self, ...)
+      root = self.panel and self.panel.character_scroll_list
+      if root then -- Some error checks
+        local character = root:GetCharacter()
+        if character and old_character ~= character and character == charsel   then -- To prevent it from repeatively running the code too many times
+            print(character.." CHARACTER")
+           
+                TheFrontEnd:GetSound():PlaySound(charsel.."/characters/"..charsel.."/"..charsel.."_mu", "characterselect")
+        
+
+
+            
+
+        else
+            if  TheFrontEnd:GetSound():PlayingSound("characterselect") then
+                TheFrontEnd:GetSound():KillSound("characterselect")
+            end
+        end
+      end
+      end
+
+      self.old_stopmusic = self.StopLobbyMusic
+      self.StopLobbyMusic = function (self, ...)
+        self.old_stopmusic(self, ...)
+        TheFrontEnd:GetSound():KillSound("characterselect")
+        
+      end
+
+
+  end)
+
+
+end
