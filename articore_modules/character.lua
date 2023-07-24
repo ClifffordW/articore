@@ -211,17 +211,18 @@ function AddLobbyTheme(charsel)
       if root then -- Some error checks
         local character = root:GetCharacter()
         if character and old_character ~= character and character == charsel   then -- To prevent it from repeatively running the code too many times
-            print(character.." CHARACTER")
-           
-                TheFrontEnd:GetSound():PlaySound(charsel.."/characters/"..charsel.."/"..charsel.."_mu", "characterselect")
-        
+            if  not TheFrontEnd:GetSound():PlayingSound("characterselect") then
+                  TheFrontEnd:GetSound():PlaySound(charsel.."/characters/"..charsel.."/"..charsel.."_mu", "characterselect")
+                  TheFrontEnd:GetSound():SetParameter("characterselect", "fade", 0.4109)
+            end
+            TheFrontEnd:GetSound():SetParameter("characterselect", "fade", 1)
 
 
             
 
         else
             if  TheFrontEnd:GetSound():PlayingSound("characterselect") then
-                TheFrontEnd:GetSound():KillSound("characterselect")
+              TheFrontEnd:GetSound():SetParameter("characterselect", "fade", 0.38)
             end
         end
       end
