@@ -164,6 +164,34 @@ function CharacterAbillity(character, first, second, third)
 
 end
 
+--Adds character talking font file has to be talkingfont_yourcharacter.zip in fonts folder
+function AddCharFont(prefab)
+
+  local font = "TALKINGFONT_" .. prefab:upper()
+  _G.global(font) --Fix provided by CarlZalph ty
+  _G[font] = "talkingfont_" .. prefab
+
+
+  local charfont = _G[font]
+
+  if not charfont then
+      return
+  end
+
+  AddSimPostInit(function()
+      TheSim:UnloadFont(charfont)
+      TheSim:UnloadPrefabs({"char_fonts"})
+
+      local Assets = {
+          Asset("FONT", _G.resolvefilepath("fonts/talkingfont_"..prefab..".zip")),
+      }
+      local FontsPrefab = _G.Prefab("char_fonts", function() return _G.CreateEntity() end, Assets)
+      _G.RegisterPrefabs(FontsPrefab)
+      TheSim:LoadPrefabs({"char_fonts"})
+      TheSim:LoadFont(_G.resolvefilepath("fonts/talkingfont_"..prefab..".zip"), charfont)
+      TheSim:SetupFontFallbacks(charfont, _G.DEFAULT_FALLBACK_TABLE_OUTLINE)
+  end)
+end
 
 
 
