@@ -194,6 +194,73 @@ function AddCharFont(prefab)
 end
 
 
+function AddCharSkilltree(prefab)
+
+  table.insert(Assets, Asset( "IMAGE", "images/"..prefab.."_skilltree.tex" ))
+  table.insert(Assets, Asset( "ATLAS", "images/"..prefab.."_skilltree.xml" ))
+
+  table.insert(Assets, Asset( "IMAGE", "images/skilltree_icons.tex" ))
+  table.insert(Assets, Asset( "ATLAS", "images/skilltree_icons.xml" ))
+  
+  local SkillTreeDefs = require("prefabs/skilltree_defs")
+
+  local OldGetSkilltreeBG = GLOBAL.GetSkilltreeBG
+  function GLOBAL.GetSkilltreeBG(imagename, ...)
+      if imagename == prefab.."_background.tex" then
+          return "images/"..prefab.."_skilltree.xml"
+      else
+          return OldGetSkilltreeBG(imagename, ...)
+      end
+  end
+
+
+  local CreateSkillTree = function()
+    print("Creating a skilltree for "..prefab)
+    local BuildSkillsData = require("prefabs/skilltree_"..prefab) -- Load in the skilltree
+
+      if BuildSkillsData then
+          local data = BuildSkillsData(SkillTreeDefs.FN)
+
+          if data then
+              SkillTreeDefs.CreateSkillTreeFor(prefab, data.SKILLS)
+              SkillTreeDefs.SKILLTREE_ORDERS[prefab] = data.ORDERS
+        print("Created "..prefab.." skilltree")
+          end
+      end
+  end
+  CreateSkillTree();
+
+end
+
+function AddScorebBadge(prefab, state1, state2, state3)
+  local oldbadge = GLOBAL.GetPlayerBadgeData
+
+  local function GetPlayerBadgeData(character, ghost, state_1, state_2, state_3)
+      if character == prefab then
+          if ghost then
+              return "ghost", "idle", "ghost_skin", 0.15, -55
+          else
+              if state_1 then
+                  return "wilson", "idle_loop_ui", state1, 0.23, -50
+              elseif state_2 then
+                  return "wilson", "idle_loop_ui", state2, 0.23, -50
+
+              elseif state_3 then
+                  return "wilson", "idle_loop_ui", state3, 0.23, -50
+              else
+                  return "wilson", "idle_loop_ui", "normal_skin", 0.23, -50
+              end
+          end
+          -- Execute the old GetPlayerBadgeData function for other characters
+          
+      end
+    return oldbadge(character, ghost, state_1, state_2, state_3)
+  end
+
+  -- Replace the existing GetPlayerBadgeData function
+  _G.GetPlayerBadgeData = GetPlayerBadgeData
+end
+
 
 
 --Add Stats for character
