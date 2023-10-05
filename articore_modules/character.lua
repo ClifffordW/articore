@@ -199,20 +199,19 @@ function AddCharSkilltree(prefab)
   table.insert(Assets, Asset( "IMAGE", "images/"..prefab.."_skilltree.tex" ))
   table.insert(Assets, Asset( "ATLAS", "images/"..prefab.."_skilltree.xml" ))
 
-  table.insert(Assets, Asset( "IMAGE", "images/skilltree_icons.tex" ))
-  table.insert(Assets, Asset( "ATLAS", "images/skilltree_icons.xml" ))
+  table.insert(Assets, Asset( "IMAGE", "images/skilltree_"..prefab.."_icons.tex" ))
+  table.insert(Assets, Asset( "ATLAS", "images/skilltree_"..prefab.."_icons.xml" ))
+
+  RegisterSkilltreeBGForCharacter("images/"..prefab.."_skilltree.xml", prefab)
+
+  
+  for i = 1, 12 do 
+    RegisterSkilltreeIconsAtlas("images/skilltree_"..prefab.."_icons.xml", "skill_intimidating_"..i..".tex")
+    RegisterSkilltreeIconsAtlas("images/skilltree_"..prefab.."_icons.xml", "skill_unintimidating_"..i..".tex")
+
+  end
   
   local SkillTreeDefs = require("prefabs/skilltree_defs")
-
-  local OldGetSkilltreeBG = GLOBAL.GetSkilltreeBG
-  function GLOBAL.GetSkilltreeBG(imagename, ...)
-      if imagename == prefab.."_background.tex" then
-          return "images/"..prefab.."_skilltree.xml"
-      else
-          return OldGetSkilltreeBG(imagename, ...)
-      end
-  end
-
 
   local CreateSkillTree = function()
     print("Creating a skilltree for "..prefab)
