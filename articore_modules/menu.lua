@@ -57,12 +57,44 @@ end
 
 
 
-function SetMusic(music, number)
+function SetMusic(music, number, curiomusic)
   if type(music) == "string" then
     GLOBAL.FE_MUSIC = music
   else
     GLOBAL.FE_MUSIC = music[math.random(1,number)]
   end
+
+  if curiomusic then
+      AddClassPostConstruct("screens/redux/multiplayermainscreen", function(self, prev_screen, profile, offline, session_data)
+        function self:OnPlayerSummaryButton()
+
+            if TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode() then
+                TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.MAINSCREEN.OFFLINE, STRINGS.UI.MAINSCREEN.ITEMCOLLECTION_DISABLE, 
+                    {
+                        {text=STRINGS.UI.FESTIVALEVENTSCREEN.OFFLINE_POPUP_LOGIN, cb = function()
+                                GLOBAL.SimReset()
+                            end},
+                        {text=STRINGS.UI.FESTIVALEVENTSCREEN.OFFLINE_POPUP_BACK, cb=function() TheFrontEnd:PopScreen() end },
+                    }))
+            else
+                
+                TheFrontEnd:GetSound():SetParameter("FEMusic", "fade", 1)
+                self:_FadeToScreen(PlayerSummaryScreen, {GLOBAL.Profile})
+            end
+        end
+    end)
+    AddClassPostConstruct("screens/redux/playersummaryscreen", function(self)
+        function self:StartMusic()
+
+        end
+    end)
+  end
+
+
+
+
+
+
 end
 
 
@@ -107,12 +139,35 @@ function ChangeMenuSel(image, transparency)
   end)
 end
 
+local menu_fonts = {"menu_fonts"}
+function AddMenuFont(pickedfont)
+    local font = string.upper(pickedfont)
+    _G.global(font)
+    _G[font] = pickedfont
+
+    AddSimPostInit(function()
+        TheSim:UnloadFont(pickedfont)
+        TheSim:UnloadPrefabs(menu_fonts)
+
+        local Assets = {
+            Asset("FONT", _G.resolvefilepath("fonts/cp2077.zip")),
+        }
+
+        local FontsPrefab = _G.Prefab("menu_fonts", function() return _G.CreateEntity() end, Assets)
+        _G.RegisterPrefabs(FontsPrefab)
+        TheSim:LoadPrefabs(menu_fonts)
+        TheSim:LoadFont(_G.resolvefilepath("fonts/" .. pickedfont .. ".zip"), pickedfont)
+        TheSim:SetupFontFallbacks(pickedfont, _G.DEFAULT_FALLBACK_TABLE_OUTLINE)
+    end)
+
+    table.insert(_G.FONTS, {filename = MODROOT.."fonts/"..pickedfont..".zip", alias = pickedfont, fallback = DEFAULT_FALLBACK_TABLE_OUTLINE})
+end
 
 
 
 
 
-function HideMenuPanel()
+function HideMenuPanel(motd)
  
   AddClassPostConstruct("widgets/redux/mainmenu_motdpanel", function(self)
     if self.config.bg then self.config.bg:Kill() end
@@ -130,14 +185,16 @@ function HideMenuPanel()
   end)
 
 
+
+
   AddClassPostConstruct(redux.."multiplayermainscreen", function(self)
     
 
 
 
-    self.inst:DoPeriodicTask(.1, function()
-      self.info_panel:SetPosition(-5000,-5000)
-    end)
+    if motd then
+      self.motd_panel:Hide()
+    end
     
 
     self.banner_root:Kill()
@@ -255,12 +312,16 @@ function SkipLogging()
     self.root:Kill()
   end)
 
-
+  AddClassPostConstruct("screens/redux/networkloginpopup", function(self)
+    self:Hide()
+  end)
+  
   AddClassPostConstruct("screens/redux/mainscreen", function(self, instant_log)
 
     self:OnLoginButton(true)
     Mult = require("screens/redux/multiplayermainscreen")
     GLOBAL.TheFrontEnd:FadeToScreen(self, function() return Mult() end, nil)
+    GLOBAL.TheInventory:StartGetAllItems()
   end)
 end
 
