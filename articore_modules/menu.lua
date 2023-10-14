@@ -22,7 +22,29 @@ function AddBG(screen, image, transparency)
 end
 
 
+local menu_fonts = {"menu_fonts"}
+function AddMenuFont(pickedfont)
+    local font = string.upper(pickedfont)
+    _G.global(font)
+    _G[font] = pickedfont
 
+    AddSimPostInit(function()
+        TheSim:UnloadFont(pickedfont)
+        TheSim:UnloadPrefabs(menu_fonts)
+
+        local Assets = {
+            Asset("FONT", _G.resolvefilepath("fonts/cp2077.zip")),
+        }
+
+        local FontsPrefab = _G.Prefab("menu_fonts", function() return _G.CreateEntity() end, Assets)
+        _G.RegisterPrefabs(FontsPrefab)
+        TheSim:LoadPrefabs(menu_fonts)
+        TheSim:LoadFont(_G.resolvefilepath("fonts/" .. pickedfont .. ".zip"), pickedfont)
+        TheSim:SetupFontFallbacks(pickedfont, _G.DEFAULT_FALLBACK_TABLE_OUTLINE)
+    end)
+
+    table.insert(_G.FONTS, {filename = MODROOT.."fonts/"..pickedfont..".zip", alias = pickedfont, fallback = DEFAULT_FALLBACK_TABLE_OUTLINE})
+end
 
 
 
