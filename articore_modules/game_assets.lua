@@ -16,8 +16,56 @@ end
 
 
 
+--Experimental
+function AddScrapbookItem(prefab, bank, build, category, subcat, atlas, description, is_burnable, burnvalue)
+
+  if not MODDED_CRAFTING[string.upper(prefab)] then print("MISSING RECIPE") return end
+
+  local categories = {
+    creature = true,
+    item = true,
+    food = true,
+    giant = true,
+    thing = true,
+    POI = true,
+  }
+
+  category = categories[category] and category or "thing"
+  if subcat == nil or subcat == "" then
+    subcat = nil
+  end
 
 
+  local scrapbook_prefabs = require("scrapbook_prefabs")
+  local scrapbookdata = require("screens/redux/scrapbookdata")
+
+  STRINGS.SCRAPBOOK.SPECIALINFO[string.upper(prefab)] = description or "PLACEHOLDER"
+  local scrapbookitems = {
+    [prefab] = {subcat = subcat, fueltype = is_burnable and "BURNABLE" or nil, fuelvalue = (is_burnable and burnvalue) and burnvalue or nil, burnable = is_burnable and true or false, build = build, bank = bank, anim = "idle", craftingprefab="wildcard", deps = unpack(MODDED_CRAFTING[string.upper(prefab)]), specialinfo = string.upper(prefab)},
+
+  }
+
+
+    
+  for k, v in pairs(scrapbookitems) do
+    if v.subcat and STRINGS.SCRAPBOOK.SUBCATS[string.upper(v.subcat)] == nil then
+      STRINGS.SCRAPBOOK.SUBCATS[string.upper(v.subcat)] = v.subcat -- TEMP fix of missing subcat until end of the beta lmao
+    end
+    v.name = v.name or k
+    v.prefab = k
+    v.tex = v.tex or k..".tex"
+    v.type = v.type or "item"
+    v.deps = v.deps or {}
+    v.notes = v.notes or {}
+    
+    scrapbook_prefabs[k] = true
+    scrapbookdata[k] = v
+    
+  end
+  print("Succesfully added "..prefab.." to scrapbook")
+
+end
+  
 
 
 
