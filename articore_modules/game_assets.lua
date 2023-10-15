@@ -17,7 +17,7 @@ end
 
 
 --Experimental
-function AddScrapbookItem(prefab, bank, build, category, subcat, atlas, description, is_burnable, burnvalue)
+function AddScrapbookItem(prefab, category, subcat, description, is_burnable, bank, build, atlas)
 
   if not MODDED_CRAFTING[string.upper(prefab)] then print("MISSING RECIPE") return end
 
@@ -38,12 +38,33 @@ function AddScrapbookItem(prefab, bank, build, category, subcat, atlas, descript
 
   local scrapbook_prefabs = require("scrapbook_prefabs")
   local scrapbookdata = require("screens/redux/scrapbookdata")
+  
 
   STRINGS.SCRAPBOOK.SPECIALINFO[string.upper(prefab)] = description or "PLACEHOLDER"
   local scrapbookitems = {
-    [prefab] = {subcat = subcat, fueltype = is_burnable and "BURNABLE" or nil, fuelvalue = (is_burnable and burnvalue) and burnvalue or nil, burnable = is_burnable and true or false, build = build, bank = bank, anim = "idle", craftingprefab="wildcard", deps = unpack(MODDED_CRAFTING[string.upper(prefab)]), specialinfo = string.upper(prefab)},
+    [prefab] = 
+    {
+      subcat = subcat, 
+      fueltype = is_burnable and "BURNABLE" or nil, 
+      fuelvalue = is_burnable or nil, 
+      burnable = is_burnable and true or false, 
+      
+      
+      build = build, bank = bank, anim = "idle", 
+      
+      
+      
+      specialinfo = string.upper(prefab),
+
+
+      deps = {unpack(MODDED_CRAFTING[string.upper(prefab).."_SCRAPBOOK"])}
+
+      
+
+    },
 
   }
+  
 
 
     
