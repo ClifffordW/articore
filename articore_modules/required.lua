@@ -1,9 +1,6 @@
 
---Set The Global Prefix
+--Somehow _G is not assigned by default
 _G = GLOBAL
-
---modimporter all
---modimport("scripts/c-library/fn_init")
 
 --Game Requirements
 require = _G.require
@@ -154,6 +151,9 @@ TimeEvent = _G.TimeEvent
 EventHandler = _G.EventHandler
 TheCamera = _G.TheCamera
 GetString = _G.GetString
+
+
+UICOLOURS = _G.UICOLOURS
 
 ----------------------------------------------------------
 
