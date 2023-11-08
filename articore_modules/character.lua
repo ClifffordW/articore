@@ -64,6 +64,51 @@ function AddAboutMe(character, text)
 end
 
 
+function AddCharLobbyMusic(music, prefab)
+  AddClassPostConstruct("screens/redux/lobbyscreen", function(self, ...)
+
+
+    TheFrontEnd = GLOBAL.TheFrontEnd
+    if not TheFrontEnd then return end
+    if not music then return end 
+
+    local root
+    local old_character
+    local old_OnUpdate = self.OnUpdate
+    self.OnUpdate = function(self, ...)
+      old_OnUpdate(self, ...)
+      root = self.panel and self.panel.character_scroll_list
+      if root then -- Some error checks
+        local character = root:GetCharacter()
+        if character and old_character ~= character and character == prefab   then -- To prevent it from repeatively running the code too many times
+            if  not TheFrontEnd:GetSound():PlayingSound("characterselect") then
+                  TheFrontEnd:GetSound():PlaySound(music, "characterselect")
+
+            end
+			TheFrontEnd:GetSound():SetVolume("characterselect",  1)
+       
+
+
+            
+
+        else
+            if  TheFrontEnd:GetSound():PlayingSound("characterselect") then
+              TheFrontEnd:GetSound():SetVolume("characterselect",  0)
+            end
+        end
+      end
+      end
+
+      self.old_stopmusic = self.StopLobbyMusic
+      self.StopLobbyMusic = function (self, ...)
+        self.old_stopmusic(self, ...)
+        TheFrontEnd:GetSound():KillSound("characterselect")
+        
+      end
+
+
+  end)
+end
 
 
 --Adds skin for character. Name, description, quote, is the character modded ?, is dynamic asset used?, add prefab if modded skin not used
@@ -192,10 +237,6 @@ function AddCharFont(prefab)
       TheSim:SetupFontFallbacks(charfont, _G.DEFAULT_FALLBACK_TABLE_OUTLINE)
   end)
 end
-
-
-
-
 
 
 function AddCharSkilltree(prefab)
