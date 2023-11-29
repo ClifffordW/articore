@@ -174,6 +174,108 @@ function AddCharacterSkin(character, skin, name, description, quote, modded, dyn
 
 end
 
+function AnimatedBigPortrait(character, skin)
+  if skin then 
+    character = character.."_"..skin
+  end
+
+  AddAnim(character.."_bigportrait")
+
+
+
+AddClassPostConstruct("screens/redux/wardrobescreen", function(self, ...)
+    local herocharacter = self.currentcharacter
+    local skin = self.preview_skins.base
+
+      
+
+    self.heroportrait_anim = self.preview_root:AddChild(UIAnim())
+    
+    self.heroportrait_anim:GetAnimState():SetBank("bigportrait")
+    self.heroportrait_anim:SetScale(0.50)
+    self.heroportrait_anim:SetPosition(0, 220)
+    self.heroportrait_anim:GetAnimState():PlayAnimation("idle", true)
+    self.heroportrait_anim:MoveToFront()
+    self.heroportrait_anim:Hide()
+
+    local animated_skins = 
+    {
+        whisky_none = true,
+    }
+
+
+
+
+    function self:_SetShowPortrait(show)
+        local herocharacter = self.currentcharacter
+        local skin = self.preview_skins.base
+
+        if show then
+
+
+            
+
+            
+            self.heroportrait:Show()
+            self.heroportrait_anim:Show()
+            
+            self.heroportrait:Show()
+            
+            self.puppet_root:Hide()
+
+
+            self.showing_portrait = true
+        else
+            
+                
+                self.heroportrait_anim:Hide()
+          
+                self.heroportrait:Hide()
+            
+
+            self.puppet_root:Show()
+            self.showing_portrait = false
+        end
+
+
+
+    end
+
+    function self:_SetPortrait()
+      local herocharacter = self.currentcharacter
+      local skin = self.preview_skins.base
+  
+      local found_name = _G.SetHeroNameTexture_Gold(self.heroname, herocharacter)
+      if found_name then
+          self.heroname:Show()
+      else
+          self.heroname:Hide()
+      end
+  
+      if skin then
+          _G.SetSkinnedOvalPortraitTexture(self.heroportrait, herocharacter, skin)
+
+          self.heroportrait_anim:GetAnimState():SetBuild(character.."_bigportrait")
+
+      else
+          _G.SetOvalPortraitTexture(self.heroportrait, herocharacter)
+      end
+  
+      self.characterquote:SetMultilineTruncatedString(STRINGS.SKIN_QUOTES[skin] or STRINGS.CHARACTER_QUOTES[herocharacter] or "",
+        3, --maxlines
+        300, --maxwidth,
+        55, --maxcharsperline,
+        true, --ellipses,
+        false --shrink_to_fit
+      )
+    end
+      
+  end)
+
+end
+
+
+
 --Adds skinmode to character (name, skinmode, hasclothing true or false)
 function AddSkinMode(name, mode1, hasclothing)
 
