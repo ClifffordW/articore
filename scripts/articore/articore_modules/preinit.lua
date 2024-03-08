@@ -5,7 +5,9 @@ function LoadedArticore()
 
   branch = string.upper(GLOBAL.BRANCH)
     
-  AddClassPostConstruct(mainscreen, function(self)
+  local screen = CurrentScreen(true, "mainscreen")
+
+  AddClassPostConstruct(screen, function(self)
       
     self.inst:DoTaskInTime(1.7, function(self)
 
@@ -15,7 +17,7 @@ function LoadedArticore()
 		print("Articore API Loaded..")
 
 		print("----------------------")
-		print("Version 3.0")
+		print("Version 5.0")
 		print("Author: Clifford W.")
 		print("----------------------")
     

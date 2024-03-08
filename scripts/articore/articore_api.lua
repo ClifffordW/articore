@@ -1,5 +1,5 @@
 
-local path = "articore/articore_modules/"
+local path = "scripts/articore/articore_modules/"
 
 local modules =
 {
