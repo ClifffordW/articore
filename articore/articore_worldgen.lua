@@ -66,20 +66,20 @@ end
 
 _G = GLOBAL
 
-require = _G.require
+require = require
 
 if TheFrontEnd then
-    TheFrontEnd = _G.TheFrontEnd
+    TheFrontEnd = TheFrontEnd
 end
 
-STRINGS = _G.STRINGS
-GROUND = _G.GROUND
-NODE_TYPE = _G.NODE_TYPE
-KEYS = _G.KEYS
-NODE_INTERNAL_CONNECTION_TYPE = _G.NODE_INTERNAL_CONNECTION_TYPE
+STRINGS = STRINGS
+GROUND = GROUND
+NODE_TYPE = NODE_TYPE
+KEYS = KEYS
+NODE_INTERNAL_CONNECTION_TYPE = NODE_INTERNAL_CONNECTION_TYPE
 
-Layouts = _G.require("map/layouts").Layouts
-StaticLayout = _G.require("map/static_layout")
+Layouts = require("map/layouts").Layouts
+StaticLayout = require("map/static_layout")
 
 layouts_path = "map/static_layouts/"
 local namet = nil

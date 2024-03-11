@@ -1,1 +1,0 @@
-modimport("scripts/articore/articore_api")
