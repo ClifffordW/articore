@@ -8,7 +8,18 @@ end
     
 
 
+function _ServerCode(ispristine)
 
+    
+        if ispristine then
+            inst.entity:SetPristine()
+        end
+       
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+end
 
 
 
@@ -20,12 +31,7 @@ function EnableMod()
     end
 end
     
-  
-
-_G.GetCurrentAnimation = function(input)
-    if _G.IsConsole() then print("This does not work on consoles!") return end
-    return string.match(input.entity:GetDebugString(), "anim: ([^ ]+) ")
-end
+    
 
 function Wishes()
     if WORLD_SPECIAL_EVENT == ("WINTERS_FEAST" or "HALLOWED_NIGHTS") then  

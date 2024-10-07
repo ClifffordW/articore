@@ -19,10 +19,7 @@ end
 --Experimental
 function AddScrapbookItem(prefab, category, subcat, description, is_burnable, bank, build, atlas)
 
-  if MODDED_CRAFTING and not MODDED_CRAFTING[string.upper(prefab).."_SCRAPBOOK"] then
-    print("MODDED_CRAFTING TABLE IS MISSING "..string.upper(prefab).."_SCRAPBOOK TABLE")
-  
-  end
+  if not MODDED_CRAFTING[string.upper(prefab)] then print("MISSING RECIPE") return end
 
   local categories = {
     creature = true,
@@ -60,7 +57,7 @@ function AddScrapbookItem(prefab, category, subcat, description, is_burnable, ba
       specialinfo = string.upper(prefab),
 
 
-      deps = (MODDED_CRAFTING and MODDED_CRAFTING[string.upper(prefab).."_SCRAPBOOK"]) and {unpack(MODDED_CRAFTING[string.upper(prefab).."_SCRAPBOOK"])} or nil
+      deps = {unpack(MODDED_CRAFTING[string.upper(prefab).."_SCRAPBOOK"])}
 
       
 

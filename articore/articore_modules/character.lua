@@ -114,8 +114,8 @@ end
 --Adds skin for character. Name, description, quote, is the character modded ?, is dynamic asset used?, add prefab if modded skin not used
 function AddCharacterSkin(character, skin, name, description, quote, modded, dynamicskin, addprefabs)
   local _G = GLOBAL
-  local PREFAB_SKINS = _G.PREFAB_SKINS
-  local PREFAB_SKINS_IDS = _G.PREFAB_SKINS_IDS
+  local PREFAB_SKINS = PREFAB_SKINS
+  local PREFAB_SKINS_IDS = PREFAB_SKINS_IDS
   local SKIN_AFFINITY_INFO = GLOBAL.require("skin_affinity_info")
 
   
@@ -174,108 +174,6 @@ function AddCharacterSkin(character, skin, name, description, quote, modded, dyn
 
 end
 
-function AnimatedBigPortrait(character, skin)
-  if skin then 
-    character = character.."_"..skin
-  end
-
-  AddAnim(character.."_bigportrait")
-
-
-
-AddClassPostConstruct("screens/redux/wardrobescreen", function(self, ...)
-    local herocharacter = self.currentcharacter
-    local skin = self.preview_skins.base
-
-      
-
-    self.heroportrait_anim = self.preview_root:AddChild(UIAnim())
-    
-    self.heroportrait_anim:GetAnimState():SetBank("bigportrait")
-    self.heroportrait_anim:SetScale(0.50)
-    self.heroportrait_anim:SetPosition(0, 220)
-    self.heroportrait_anim:GetAnimState():PlayAnimation("idle", true)
-    self.heroportrait_anim:MoveToFront()
-    self.heroportrait_anim:Hide()
-
-    local animated_skins = 
-    {
-        whisky_none = true,
-    }
-
-
-
-
-    function self:_SetShowPortrait(show)
-        local herocharacter = self.currentcharacter
-        local skin = self.preview_skins.base
-
-        if show then
-
-
-            
-
-            
-            self.heroportrait:Show()
-            self.heroportrait_anim:Show()
-            
-            self.heroportrait:Show()
-            
-            self.puppet_root:Hide()
-
-
-            self.showing_portrait = true
-        else
-            
-                
-                self.heroportrait_anim:Hide()
-          
-                self.heroportrait:Hide()
-            
-
-            self.puppet_root:Show()
-            self.showing_portrait = false
-        end
-
-
-
-    end
-
-    function self:_SetPortrait()
-      local herocharacter = self.currentcharacter
-      local skin = self.preview_skins.base
-  
-      local found_name = _G.SetHeroNameTexture_Gold(self.heroname, herocharacter)
-      if found_name then
-          self.heroname:Show()
-      else
-          self.heroname:Hide()
-      end
-  
-      if skin then
-          _G.SetSkinnedOvalPortraitTexture(self.heroportrait, herocharacter, skin)
-
-          self.heroportrait_anim:GetAnimState():SetBuild(character.."_bigportrait")
-
-      else
-          _G.SetOvalPortraitTexture(self.heroportrait, herocharacter)
-      end
-  
-      self.characterquote:SetMultilineTruncatedString(STRINGS.SKIN_QUOTES[skin] or STRINGS.CHARACTER_QUOTES[herocharacter] or "",
-        3, --maxlines
-        300, --maxwidth,
-        55, --maxcharsperline,
-        true, --ellipses,
-        false --shrink_to_fit
-      )
-    end
-      
-  end)
-
-end
-
-
-
 --Adds skinmode to character (name, skinmode, hasclothing true or false)
 function AddSkinMode(name, mode1, hasclothing)
 
@@ -315,7 +213,7 @@ end
 function AddCharFont(prefab)
 
   local font = "TALKINGFONT_" .. prefab:upper()
-  _G.global(font) --Fix provided by CarlZalph ty
+  global(font) --Fix provided by CarlZalph ty
   _G[font] = "talkingfont_" .. prefab
 
 
@@ -327,16 +225,16 @@ function AddCharFont(prefab)
 
   AddSimPostInit(function()
       TheSim:UnloadFont(charfont)
-      TheSim:UnloadPrefabs({"char_fonts"})
+      TheSim:UnloadPrefabs({prefab.."_font"})
 
       local Assets = {
-          Asset("FONT", _G.resolvefilepath("fonts/talkingfont_"..prefab..".zip")),
+          Asset("FONT", resolvefilepath("fonts/talkingfont_"..prefab..".zip")),
       }
-      local FontsPrefab = _G.Prefab("char_fonts", function() return _G.CreateEntity() end, Assets)
-      _G.RegisterPrefabs(FontsPrefab)
-      TheSim:LoadPrefabs({"char_fonts"})
-      TheSim:LoadFont(_G.resolvefilepath("fonts/talkingfont_"..prefab..".zip"), charfont)
-      TheSim:SetupFontFallbacks(charfont, _G.DEFAULT_FALLBACK_TABLE_OUTLINE)
+      local FontsPrefab = Prefab(prefab.."_font", function() return CreateEntity() end, Assets)
+      RegisterPrefabs(FontsPrefab)
+      TheSim:LoadPrefabs({prefab.."_font"})
+      TheSim:LoadFont(resolvefilepath("fonts/talkingfont_"..prefab..".zip"), charfont)
+      TheSim:SetupFontFallbacks(charfont, DEFAULT_FALLBACK_TABLE_OUTLINE)
   end)
 end
 
@@ -378,34 +276,31 @@ function AddCharSkilltree(prefab)
 
 end
 
-function AddScorebBadge(prefab, state1, state2, state3)
-  local oldbadge = GLOBAL.GetPlayerBadgeData
+function AddScorebBadge(prefab, state1, state2, state3, ...)
+  local GetPlayerBadgeData_old = GLOBAL.GetPlayerBadgeData or function() end
 
-  local function GetPlayerBadgeData(character, ghost, state_1, state_2, state_3)
+  GetPlayerBadgeData = function(character, ghost, state1, state2, state3, ...)
       if character == prefab then
           if ghost then
               return "ghost", "idle", "ghost_skin", 0.15, -55
           else
-              if state_1 then
+              if state1 then
                   return "wilson", "idle_loop_ui", state1, 0.23, -50
-              elseif state_2 then
+              elseif state2 then
                   return "wilson", "idle_loop_ui", state2, 0.23, -50
-
-              elseif state_3 then
+              elseif state3 then
                   return "wilson", "idle_loop_ui", state3, 0.23, -50
               else
                   return "wilson", "idle_loop_ui", "normal_skin", 0.23, -50
               end
           end
-          -- Execute the old GetPlayerBadgeData function for other characters
-          
       end
-    return oldbadge(character, ghost, state_1, state_2, state_3)
+      return GetPlayerBadgeData_old(character, ghost, state1, state2, state3, ...)
   end
-
-  -- Replace the existing GetPlayerBadgeData function
-  _G.GetPlayerBadgeData = GetPlayerBadgeData
 end
+
+
+
 
 
 

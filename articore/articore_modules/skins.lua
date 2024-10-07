@@ -1,7 +1,7 @@
 function AddItemSkin(prefab, skin, name, description, test)
 	local _G = GLOBAL
-	local PREFAB_SKINS = _G.PREFAB_SKINS
-	local PREFAB_SKINS_IDS = _G.PREFAB_SKINS_IDS
+	local PREFAB_SKINS = PREFAB_SKINS
+	local PREFAB_SKINS_IDS = PREFAB_SKINS_IDS
 	local SKIN_AFFINITY_INFO = GLOBAL.require("skin_affinity_info")
 		local skinname = prefab.."_"..skin
 		AddPrefab(skinname)
