@@ -1,5 +1,5 @@
 
-local path = "articore/articore_modules/"
+local path = "riftcore/riftcore_modules/"
 
 local modules =
 {
