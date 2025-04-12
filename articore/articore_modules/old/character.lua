@@ -1,8 +1,10 @@
 
---Working
-function AddCharacter(character, name, gender, title, quote, map, speech, addprefabs)
+ --Adds Character with Name, gender, title, quote, map icon, speech file, survivability (slim, grim) and should it add _none prefab
+function AddCharacter(character, name, gender, title, quote, skindesc, map, speech, survivability, addprefabs)
+ 
+  AddPrefab(character)
   if addprefabs then
-    AddPrefab(character)
+
 
 
 
@@ -20,11 +22,14 @@ function AddCharacter(character, name, gender, title, quote, map, speech, addpre
   STRINGS.CHARACTER_NAMES[character] = name
   STRINGS.CHARACTER_TITLES[character] = title
   STRINGS.CHARACTER_QUOTES[character] = "\""..quote.."\""
+  STRINGS.SKIN_DESCRIPTIONS[charname] = skindesc
+  
   
   --STRINGS.CHARACTER_ABOUTME[prefab] = about
 
   --STRINGS.SKIN_DESCRIPTIONS[charname] = description
  
+  
   STRINGS.SKIN_NAMES[charname] = name
 
 
@@ -32,16 +37,28 @@ function AddCharacter(character, name, gender, title, quote, map, speech, addpre
 
   local prefab_speech = string.upper(character)
 
+  STRINGS.NAMES[prefab_speech] = name
   STRINGS.CHARACTERS[prefab_speech] = require("speech_"..speech)
+  STRINGS.CHARACTER_SURVIVABILITY[character] = survivability
+
+  local skin_modes = {
+      { 
+          type = "ghost_skin",
+          anim_bank = "ghost",
+          idle_anim = "idle", 
+          scale = 0.75, 
+          offset = { 0, -25 } 
+      },
+  }
 
 
-  AddModCharacter(character, gender)
+  AddModCharacter(character, gender, skin_modes)
 
 
 
 end
 
-
+--Adds info about the character
 function AddAboutMe(character, text)
   STRINGS.CHARACTER_ABOUTME[character] = text
 end
@@ -49,8 +66,8 @@ end
 
 
 
-
-function AddCharacterSkin(character, skin, name, description, test, none_skin)
+--Adds skin for character. Name, description, quote, is the character modded ?, is dynamic asset used?, add prefab if modded skin not used
+function AddCharacterSkin(character, skin, name, description, quote, modded, dynamicskin, addprefabs)
   local _G = GLOBAL
   local PREFAB_SKINS = _G.PREFAB_SKINS
   local PREFAB_SKINS_IDS = _G.PREFAB_SKINS_IDS
@@ -59,15 +76,23 @@ function AddCharacterSkin(character, skin, name, description, test, none_skin)
   
 
 
-  local charname = character.."_"..skin
-  AddPrefab(charname)
+  local charname = modded and skin or character.."_"..skin
+ 
+  if addprefabs then
+
+    AddPrefab(charname)
+  end
+   
  
 
   STRINGS.SKIN_NAMES[charname] = name
   STRINGS.SKIN_DESCRIPTIONS[charname] = description
+  STRINGS.SKIN_QUOTES[charname] = "\""..quote.."\""
   
-  if not none_skin then
+  if  dynamicskin then
     AddDynamic(charname)
+  else
+    AddAnim(charname)
   end
 
   if not PREFAB_SKINS[character] then
@@ -88,7 +113,7 @@ function AddCharacterSkin(character, skin, name, description, test, none_skin)
         
         if online then
 
-            TheFrontEnd:PushScreen(ThankYouPopup({{ item = string.lower(charname), item_id = 0, gifttype = SkinGifts.types[charname] or "DEFAULT" }}))
+            TheFrontEnd:PushScreen(ThankYouPopup({{ item = charname, item_id = 0, gifttype = SkinGifts.types[charname] or "DEFAULT" }}))
         end
       end)
     end)
@@ -98,10 +123,33 @@ function AddCharacterSkin(character, skin, name, description, test, none_skin)
     prefab = "wilson" 
   end
   table.insert(PREFAB_SKINS[character], charname)
-  table.insert(SKIN_AFFINITY_INFO[character], charname)
-
+  if not SKIN_AFFINITY_INFO == nil then
+    table.insert(SKIN_AFFINITY_INFO[character], charname)
+  end
 
 end
+
+--Adds skinmode to character (name, skinmode, hasclothing true or false)
+function AddSkinMode(name, mode1, hasclothing)
+
+
+  if not mode1 then return end
+
+  local skin_mode = { type = mode1, play_emotes = true }
+
+
+
+
+  
+  
+
+
+  table.insert(GLOBAL.MODCHARACTERMODES[name], 1, skin_mode)
+  if hasclothing then
+    table.insert(GLOBAL.SKIN_TYPES_THAT_RECEIVE_CLOTHING, mode1)
+  end
+end
+
 
 
 function AddSkinCollection(character, name)
@@ -110,7 +158,7 @@ end
 
 
 
---Working
+--Adds abillity for character name 3
 function CharacterAbillity(character, first, second, third)
   STRINGS.CHARACTER_DESCRIPTIONS[character] = "*"..first.."\n*"..second.."\n*"..third
 
@@ -120,7 +168,7 @@ end
 
 
 
-
+--Add Stats for character
 function NewStats(character, health, hunger, sanity)
   
   
@@ -131,7 +179,7 @@ function NewStats(character, health, hunger, sanity)
 end
 
 
-
+--Adds inventory item for character
 function AddItem(character, item, number)
 	prefab = string.upper(character)
 	if number == nil then 

@@ -115,7 +115,7 @@ function Warning(name, warning_msg)
                     text = "Okay",
                     cb = function()
                         GLOBAL.TheFrontEnd:PopScreen()
-                        GLOBAL.TheFrontEnd:GetSound():SetVolume("FEMusic", 1) -- popup
+                        GLOBAL.TheFrontEnd:GetSound():SetVolume("FEMusic", GetModConfigData("musicvol")) -- popup
                         GLOBAL.TheFrontEnd:GetSound():KillSound("notif")
                         
                     end
@@ -179,7 +179,7 @@ function RequiredMod(mod, RequiredMod)
                             text = "Okay 󰀩",
                             cb = function()
                                 TheFrontEnd:PopScreen() -- popup
-                                TheFrontEnd:GetSound():SetVolume("FEMusic", 1) -- popup
+                                TheFrontEnd:GetSound():SetVolume("FEMusic", GetModConfigData("musicvol")) -- popup
                                 TheFrontEnd:GetSound():KillSound("notif")
                                 
                             end
@@ -224,7 +224,7 @@ function RequiredMod(mod, RequiredMod)
                             cb = function()
                                 TheFrontEnd:PopScreen() -- popup
                                 
-                                TheFrontEnd:GetSound():SetVolume("FEMusic", 1) -- popup
+                                TheFrontEnd:GetSound():SetVolume("FEMusic", GetModConfigData("musicvol")) -- popup
                                 TheFrontEnd:GetSound():KillSound("notif")
                                 
                             end

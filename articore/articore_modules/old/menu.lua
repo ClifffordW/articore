@@ -25,6 +25,37 @@ end
 
 
 
+function AddMenuFont(prefab)
+
+  local font = prefab:upper()
+  _G.global(font) --Fix provided by CarlZalph ty
+  _G[font] = prefab
+
+
+  local charfont = _G[font]
+
+  if not charfont then
+      return
+  end
+
+  AddGamePostInit(function()
+      TheSim:UnloadFont(charfont)
+      TheSim:UnloadPrefabs({prefab})
+
+      local Assets = {
+          Asset("FONT", _G.resolvefilepath("fonts/"..prefab..".zip")),
+      }
+      local FontsPrefab = _G.Prefab(prefab, function() return _G.CreateEntity() end, Assets)
+      _G.RegisterPrefabs(FontsPrefab)
+      TheSim:LoadPrefabs({prefab})
+      TheSim:LoadFont(_G.resolvefilepath("fonts/"..prefab..".zip"), charfont)
+      TheSim:SetupFontFallbacks(charfont, _G.DEFAULT_FALLBACK_TABLE_OUTLINE)
+  end)
+end
+
+
+
+
 
 function AddLogo(screen, image)
     AddTex(image)
@@ -115,7 +146,7 @@ end
 function HideMenuPanel()
  
   AddClassPostConstruct("widgets/redux/mainmenu_motdpanel", function(self)
-    if self.config.bg then self.config.bg:Kill() end
+    if self.config.bg then self.config.bg:Hide() end
 
 
 
@@ -124,7 +155,7 @@ function HideMenuPanel()
       self.old(self)
 
 
-      if self.config.bg then self.config.bg:Kill() end
+      if self.config.bg then self.config.bg:Hide() end
     end
   
   end)
@@ -135,12 +166,10 @@ function HideMenuPanel()
 
 
 
-    self.inst:DoPeriodicTask(.1, function()
-      self.info_panel:SetPosition(-5000,-5000)
-    end)
+
     
 
-    self.banner_root:Kill()
+    self.banner_root:Hide()
   end)
 end
 
@@ -252,9 +281,8 @@ end
 function SkipLogging()
   
   AddClassPostConstruct("screens/modwarningscreen", function(self)
-    self.root:Kill()
+    self.root:Hide()
   end)
-
 
   AddClassPostConstruct("screens/redux/mainscreen", function(self, instant_log)
 

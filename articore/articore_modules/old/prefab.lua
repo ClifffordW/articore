@@ -25,6 +25,27 @@ function AddUpgradeType(upgrade, material)
 end
 
 
+function AddRepairType(repair, material)
+  if repair then repair = string.upper(repair) end
+ 
+  local repair_type = GLOBAL.MATERIALS
+  repair_type[repair] = material
+
+
+
+  AddPrefabPostInit(material, function(inst)
+    inst:AddComponent("repairer")
+    inst.components.repairer.repairmaterial = repair_type[repair]
+
+
+
+  end)
+
+
+
+
+end
+
 --AddUpgradeType("new", "gears")
 
 
@@ -183,7 +204,7 @@ end
 
 
 
-
+--Add inventory textures
 function AddInvTex(prefab, tex, atlas)
   if not Assets then
     Assets = {}
@@ -229,7 +250,7 @@ end
 
 
 
-
+--Add loot to specific prefab
 function AddPrefabLoot(prefab, item, chance)
   
 
@@ -263,7 +284,7 @@ function AddPrefabLoot(prefab, item, chance)
 end
 
 
-
+--Add prefab by file name in the prefabs folder
 function AddPrefab(name)
   if not PrefabFiles then
     PrefabFiles = {}
