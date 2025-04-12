@@ -13,7 +13,7 @@ local Articore = {}
 --- @param survivability (string) Slim or grim survivability rating
 --- @param addprefabs (boolean) Whether to add a "_none" prefab
 --- @param hasvoidclothface (boolean) Whether to add voidcloth face animation
-function Articore.AddCharacter(
+function Articore:AddCharacter(
 	character,
 	name,
 	gender,
@@ -57,16 +57,14 @@ end
 --- @param first (string) First ability description
 --- @param second (string) Second ability description
 --- @param third (string) Third ability description
-function Articore.CharacterAbility(character, first, second, third)
+function Articore:CharacterAbility(character, first, second, third)
 	STRINGS.CHARACTER_DESCRIPTIONS[character] = "*" .. first .. "\n*" .. second .. "\n*" .. third
 end
 
-
-
 --- @param character (string) Character name
 --- @param text (string) About me text
-function Articore.AddAboutMe(character, text)
-    STRINGS.CHARACTER_ABOUTME[character] = text
+function Articore:AddAboutMe(character, text)
+	STRINGS.CHARACTER_ABOUTME[character] = text
 end
 
 --- Adds a custom character skin
@@ -78,7 +76,7 @@ end
 --- @param modded (boolean) Is this a custom modded skin?
 --- @param dynamicskin (boolean) Should dynamic animations be used?
 --- @param addprefabs (boolean) Should prefab be added?
-function Articore.AddCharacterSkin(character, skin, name, description, quote, modded, dynamicskin, addprefabs)
+function Articore:AddCharacterSkin(character, skin, name, description, quote, modded, dynamicskin, addprefabs)
 	local charname = modded and skin or character .. "_" .. skin
 	if addprefabs then
 		AddPrefab(charname)
@@ -108,7 +106,7 @@ end
 --- @param name (string) Character name
 --- @param mode1 (string) Skin mode identifier
 --- @param hasclothing (boolean) Does this skin mode support clothing?
-function Articore.AddSkinMode(name, mode1, hasclothing)
+function Articore:AddSkinMode(name, mode1, hasclothing)
 	if not mode1 then
 		return
 	end
@@ -125,7 +123,7 @@ end
 --- Adds an animation asset with subfolder support
 --- @param anim (string) Name of the animation asset (without extension)
 --- @param subfolder (string|nil) Subfolder path (optional)
-function Articore.AddAnim(anim, subfolder)
+function Articore:AddAnim(anim, subfolder)
 	Assets = Assets or {}
 	local path = subfolder and ("anim/" .. subfolder .. "/") or "anim/"
 	table.insert(Assets, Asset("ANIM", path .. anim .. ".zip"))
@@ -133,10 +131,10 @@ function Articore.AddAnim(anim, subfolder)
 end
 
 --- Adds a sound asset with subfolder support
---- @param sound (string) Name of the sound file (without extension)
---- @param soundpkg (string|nil) Sound package name (optional, defaults to sound name)
+--- @param sound (string) Name of the sound file .fsb (without extension)
+--- @param soundpkg (string|nil) Sound package name .fev (optional, defaults to sound name)
 --- @param subfolder (string|nil) Subfolder path (optional)
-function Articore.AddSound(sound, soundpkg, subfolder)
+function Articore:AddSound(sound, soundpkg, subfolder)
 	Assets = Assets or {}
 	local path = subfolder and ("sound/" .. subfolder .. "/") or "sound/"
 	soundpkg = soundpkg or sound
@@ -150,7 +148,7 @@ end
 --- @param anim (string) Name of the dynamic animation asset
 --- @param dynamic (string|nil) Dynamic asset name (optional)
 --- @param subfolder (string|nil) Subfolder path (optional)
-function Articore.AddDynamic(anim, dynamic, subfolder)
+function Articore:AddDynamic(anim, dynamic, subfolder)
 	Assets = Assets or {}
 	local path = subfolder and ("anim/dynamic/" .. subfolder .. "/") or "anim/dynamic/"
 	dynamic = dynamic or anim
@@ -164,7 +162,7 @@ end
 --- @param atlas (string|nil) Associated atlas name
 --- @param inv (boolean) Whether the asset is an inventory item
 --- @param subfolder (string|nil) Subfolder path (optional)
-function Articore.AddTex(tex, atlas, inv, subfolder)
+function Articore:AddTex(tex, atlas, inv, subfolder)
 	Assets = Assets or {}
 	atlas = atlas or tex
 	local basePath = inv and "images/inventoryimages/" or "images/"
@@ -175,10 +173,62 @@ function Articore.AddTex(tex, atlas, inv, subfolder)
 	print("Imported texture: " .. path .. tex .. ".tex and " .. atlas .. ".xml")
 end
 
+
+--- @param widget (string) Name of the UIAnim widget
+--- @param charvoice (string) Character name for voice
+function Articore:UIAnim_Talk(widget, charvoice)
+	if not widget.GetAnimState then
+		return
+	end
+
+	local voice_overrides = {
+		wathgrithr = "dontstarve_DLC001",
+		webber = "dontstarve_DLC001",
+		wanda = "wanda2",
+		wonkey = "monkeyisland",
+		waxwell = "dontstarve/characters/maxwell",
+	}
+
+	local tech_voice_base = voice_overrides[charvoice] or "dontstarve"
+	local tech_voice = tech_voice_base
+		.. "/characters/"
+		.. (charvoice == "waxwell" and "maxwell" or charvoice)
+		.. "/talk_LP"
+
+	widget:GetAnimState():PlayAnimation("dial_loop", true)
+
+	local random_duration = math.random(2, 5)
+
+	widget.inst:DoTaskInTime(random_duration, function()
+		widget:GetAnimState():PlayAnimation("idle_loop", true)
+	end)
+end
+
+--- @param input (string) variable to check current animation of.
+function Articore:GetCurrentAnimation(input)
+	if IsConsole() then
+		print("This does not work on consoles!")
+		return
+	end
+
+	local inst = ConsoleWorldEntityUnderMouse() or ThePlayer
+	input = input or inst or nil
+
+	if input == nil then 
+		return 
+	end
+
+	return string.match(input.entity:GetDebugString(), "anim: ([^ ]+) ")
+end
+
+
+
+
+
 -- ########## WORLD ENTITIES ##########
 --- Adds a prefab asset
 --- @param name (string) Name of the prefab to add
-function Articore.AddPrefab(name)
+function Articore:AddPrefab(name)
 	PrefabFiles = PrefabFiles or {}
 	table.insert(PrefabFiles, name)
 end
@@ -186,77 +236,79 @@ end
 --- Registers an upgrade type for a material
 --- @param upgrade (string) Name of the upgrade type
 --- @param material (string) Associated material prefab
-function Articore.AddUpgradeType(upgrade, material)
-    if not upgrade or not material then
-        print("[ERROR] AddUpgradeType: Missing upgrade or material!")
-        return
-    end
+function Articore:AddUpgradeType(upgrade, material)
+	if not upgrade or not material then
+		print("[ERROR] AddUpgradeType: Missing upgrade or material!")
+		return
+	end
 
-    upgrade = string.upper(upgrade)
-    UPGRADETYPES[upgrade] = material
+	upgrade = string.upper(upgrade)
+	UPGRADETYPES[upgrade] = material
 
-    AddPrefabPostInit(material, function(inst)
-        if inst and inst.AddComponent then
-            inst:AddComponent("upgrader")
-            inst.components.upgrader.upgradetype = UPGRADETYPES[upgrade]
-        end
-    end)
+	AddPrefabPostInit(material, function(inst)
+		if inst and inst.AddComponent then
+			inst:AddComponent("upgrader")
+			inst.components.upgrader.upgradetype = UPGRADETYPES[upgrade]
+		end
+	end)
 
-    AddPlayerPostInit(function(player)
-        if player and player.AddTag then
-            player:AddTag(material .. "_upgradeuser")
-        end
-    end)
+	AddPlayerPostInit(function(player)
+		if player and player.AddTag then
+			player:AddTag(material .. "_upgradeuser")
+		end
+	end)
 end
 
 --- Registers a repair type for a material
 --- @param repair (string) Name of the repair type
 --- @param material (string) Associated material prefab
-function Articore.AddRepairType(repair, material)
-    if not repair or not material then
-        print("[ERROR] AddRepairType: Missing repair or material!")
-        return
-    end
+function Articore:AddRepairType(repair, material)
+	if not repair or not material then
+		print("[ERROR] AddRepairType: Missing repair or material!")
+		return
+	end
 
-    repair = string.upper(repair)
-    GLOBAL.MATERIALS[repair] = material
+	repair = string.upper(repair)
+	GLOBAL.MATERIALS[repair] = material
 
-    AddPrefabPostInit(material, function(inst)
-        if inst and inst.AddComponent then
-            inst:AddComponent("repairer")
-            inst.components.repairer.repairmaterial = GLOBAL.MATERIALS[repair]
-        end
-    end)
+	AddPrefabPostInit(material, function(inst)
+		if inst and inst.AddComponent then
+			inst:AddComponent("repairer")
+			inst.components.repairer.repairmaterial = GLOBAL.MATERIALS[repair]
+		end
+	end)
 end
 
-
-function Articore.HideMenuPanel()
-	
-    AddClassPostConstruct("widgets/redux/mainmenu_motdpanel", function(self)
-        if self.config.bg then
-            self.config.bg:Hide()
-        end
-
-        self.old = self.OnImagesLoaded
-        self.OnImagesLoaded = function(self)
-            self.old(self)
-
-            if self.config.bg then
-                self.config.bg:Hide()
-            end
-        end
-    end)
-
-    AddClassPostConstruct(redux .. "multiplayermainscreen", function(self)
-        self.banner_root:Hide()
-    end)
-	
+--- @param r (integer) Red
+--- @param g (integer) Green
+--- @param b (integer) Blue
+--- @param a (integer) Alpha
+function Articore:RGBA(r, g, b, a)
+	return { r / 255, g / 255, b / 255, a }
 end
 
+function Articore:HideMenuPanel()
+	AddClassPostConstruct("widgets/redux/mainmenu_motdpanel", function(self)
+		if self.config.bg then
+			self.config.bg:Hide()
+		end
+
+		self.old = self.OnImagesLoaded
+		self.OnImagesLoaded = function(self)
+			self.old(self)
+
+			if self.config.bg then
+				self.config.bg:Hide()
+			end
+		end
+	end)
+
+	AddClassPostConstruct(redux .. "multiplayermainscreen", function(self)
+		self.banner_root:Hide()
+	end)
+end
 
 -- ########## EXPORT ARTICORE ##########
 GLOBAL.Articore = Articore
-
-
 
 return Articore
