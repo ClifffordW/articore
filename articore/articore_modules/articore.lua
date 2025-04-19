@@ -47,7 +47,7 @@ function Articore:AddCharacter(
 	STRINGS.CHARACTERS[string.upper(character)] = require("speech_" .. speech)
 
 	local skin_modes =
-		{ { type = "ghost_skin", anim_bank = "ghost", idle_anim = "idle", scale = 0.75, offset = { 0, -25 } } }
+	{ { type = "ghost_skin", anim_bank = "ghost", idle_anim = "idle", scale = 0.75, offset = { 0, -25 } } }
 	AddModCharacter(character, gender, skin_modes)
 end
 
@@ -173,7 +173,6 @@ function Articore:AddTex(tex, atlas, inv, subfolder)
 	print("Imported texture: " .. path .. tex .. ".tex and " .. atlas .. ".xml")
 end
 
-
 --- @param widget (string) Name of the UIAnim widget
 --- @param charvoice (string) Character name for voice
 function Articore:UIAnim_Talk(widget, charvoice)
@@ -214,16 +213,43 @@ function Articore:GetCurrentAnimation(input)
 	local inst = ConsoleWorldEntityUnderMouse() or ThePlayer
 	input = input or inst or nil
 
-	if input == nil then 
-		return 
+	if input == nil then
+		return
 	end
 
 	return string.match(input.entity:GetDebugString(), "anim: ([^ ]+) ")
 end
 
+--- @param prefab (string) Prefab to add custom scorebadge to on scoreboard
+--- @param state1 (string) State 1 skinmode
+--- @param state2 (string) State 2 skinmode
+--- @param state3 (string) State 3 skinmode
+function Articore:AddScorebBadge(prefab, state1, state2, state3)
+	local oldbadge = GLOBAL.GetPlayerBadgeData
 
+	local function GetPlayerBadgeData(character, ghost, state_1, state_2, state_3)
+		if character == prefab then
+			if ghost then
+				return "ghost", "idle", "ghost_skin", 0.15, -55
+			else
+				if state_1 then
+					return "wilson", "idle_loop_ui", state1, 0.23, -50
+				elseif state_2 then
+					return "wilson", "idle_loop_ui", state2, 0.23, -50
+				elseif state_3 then
+					return "wilson", "idle_loop_ui", state3, 0.23, -50
+				else
+					return "wilson", "idle_loop_ui", "normal_skin", 0.23, -50
+				end
+			end
+			-- Execute the old GetPlayerBadgeData function for other characters
+		end
+		return oldbadge(character, ghost, state_1, state_2, state_3)
+	end
 
-
+	-- Replace the existing GetPlayerBadgeData function
+	_G.GetPlayerBadgeData = GetPlayerBadgeData
+end
 
 -- ########## WORLD ENTITIES ##########
 --- Adds a prefab asset
