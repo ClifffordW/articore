@@ -26,9 +26,9 @@ function Articore:AddCharacter(
 	addprefabs,
 	hasvoidclothface
 )
-	AddPrefab(character)
+	Articore:AddPrefab(character)
 	if addprefabs then
-		AddPrefab(character .. "_none")
+		Articore:AddPrefab(character .. "_none")
 	end
 
 	if hasvoidclothface and Assets then
@@ -58,7 +58,21 @@ end
 --- @param second (string) Second ability description
 --- @param third (string) Third ability description
 function Articore:CharacterAbility(character, first, second, third)
-	STRINGS.CHARACTER_DESCRIPTIONS[character] = "*" .. first .. "\n*" .. second .. "\n*" .. third
+    local lines = {}
+    
+    if first and first ~= "" then
+        table.insert(lines, "*" .. first)
+    end
+    
+    if second and second ~= "" then
+        table.insert(lines, "*" .. second)
+    end
+    
+    if third and third ~= "" then
+        table.insert(lines, "*" .. third)
+    end
+    
+    STRINGS.CHARACTER_DESCRIPTIONS[character] = table.concat(lines, "\n")
 end
 
 --- @param character (string) Character name
@@ -102,9 +116,84 @@ function Articore:AddCharacterSkin(character, skin, name, description, quote, mo
 	table.insert(SKIN_AFFINITY_INFO[character], charname)
 end
 
+--- Adds an item to the scrapbook system.
+--- @param prefab (string) The unique name of the item prefab.
+--- @param category (string) The general category of the item (e.g., creature, item, food, giant, thing, POI).
+--- @param subcat (string|nil) A subcategory for further classification. Can be `nil`.
+--- @param description (string|nil) The text description displayed in the scrapbook. Defaults to "PLACEHOLDER".
+--- @param is_burnable (number|nil) Defines if the item is burnable. Will be treated as a fuel source if provided.
+--- @param bank (string) The animation bank used for the item.
+--- @param build (string) The sprite sheet build used for the item.
+--- @param atlas (string) The image atlas associated with the item.
+function Articore:AddScrapbookItem(prefab, category, subcat, description, is_burnable, bank, build, anim, atlas)
+
+	local function TableFind(tbl, search_string)
+		for key, value in pairs(tbl) do
+			if type(value) == "string" and string.find(value, search_string, 1, true) then
+				return key, value -- Return the key and the matching value
+			end
+		end
+		return nil -- Return nil if not found
+	end
+	
+    -- Check if the prefab file exists
+    if  PrefabFiles and not TableFind(PrefabFiles, prefab) then 
+        print("MISSING PREFAB FILE: " .. tostring(prefab))
+        return 
+    end
+
+    local categories = {
+        creature = true,
+        item = true,
+        food = true,
+        giant = true,
+        thing = true,
+        POI = true,
+    }
+
+    category = categories[category] and category or "thing"
+    subcat = (subcat ~= nil and subcat ~= "") and subcat or nil
+
+    local scrapbook_prefabs = require("scrapbook_prefabs")
+    local scrapbookdata = require("screens/redux/scrapbookdata")
+
+    STRINGS.SCRAPBOOK.SPECIALINFO[string.upper(prefab)] = description or "PLACEHOLDER"
+    local scrapbookitems = {
+        [prefab] = {
+            subcat = subcat,
+            fueltype = is_burnable and "BURNABLE" or nil,
+            fuelvalue = is_burnable or nil,
+            burnable = is_burnable and true or false,
+            build = build,
+            bank = bank,
+            anim = anim or "idle",
+            specialinfo = string.upper(prefab),
+            deps = {},
+        },
+    }
+
+	for k, v in pairs(scrapbookitems) do
+		if v.subcat and STRINGS.SCRAPBOOK.SUBCATS[string.upper(v.subcat)] == nil then
+		  STRINGS.SCRAPBOOK.SUBCATS[string.upper(v.subcat)] = v.subcat -- TEMP fix of missing subcat until end of the beta lmao
+		end
+		v.name = v.name or k
+		v.prefab = k
+		v.tex = v.tex or k..".tex"
+		v.type = v.type or "item"
+		v.deps = v.deps or {}
+		v.notes = v.notes or {}
+		
+		scrapbook_prefabs[k] = true
+		scrapbookdata[k] = v
+		
+	end
+end
+
+
+
 --- @param music (string) song path
 --- @param prefab (string) character prefab name
-function Articore:AddCharLobbyMusic(music, prefab)
+function Articore:AddCharLobbyMusic(music, prefab, hasreverb)
 	AddClassPostConstruct("screens/redux/lobbyscreen", function(self, ...)
 		TheFrontEnd = GLOBAL.TheFrontEnd
 		if not TheFrontEnd then return end
@@ -112,22 +201,33 @@ function Articore:AddCharLobbyMusic(music, prefab)
 
 		local root
 		local old_character
+		local screen
 		local old_OnUpdate = self.OnUpdate
 		self.OnUpdate = function(self, ...)
 			old_OnUpdate(self, ...)
 			root = self.panel and self.panel.character_scroll_list
-			if root then                                                     -- Some error checks
+			if root then
+				screen = TheFrontEnd:GetActiveScreen()                                                    -- Some error checks
 				local character = root:GetCharacter()
 				if character and old_character ~= character and character == prefab then -- To prevent it from repeatively running the code too many times
 					if not TheFrontEnd:GetSound():PlayingSound("characterselect") then
 						TheFrontEnd:GetSound():PlaySound(music, "characterselect")
 					end
 					TheFrontEnd:GetSound():SetVolume("characterselect", 1)
+					if hasreverb then
+						
+
+					end
 				else
 					if TheFrontEnd:GetSound():PlayingSound("characterselect") then
 						TheFrontEnd:GetSound():SetVolume("characterselect", 0)
 					end
 				end
+			end
+			if TheFrontEnd:GetSound():PlayingSound("characterselect") and self.current_panel_index and self.current_panel_index == 2 then
+				TheFrontEnd:GetSound():SetParameter("characterselect", "reverb", 0.19)
+			else
+				TheFrontEnd:GetSound():SetParameter("characterselect", "reverb", 0.09)
 			end
 		end
 
@@ -290,10 +390,15 @@ end
 
 -- ########## WORLD ENTITIES ##########
 --- Adds a prefab asset
---- @param name (string) Name of the prefab to add
-function Articore:AddPrefab(name)
+--- @param prefab (string) Name of the prefab to add
+--- @param name (name) Name for the prefab
+--- @param craftstring (string) string used in crafting menu
+function Articore:AddPrefab(prefab, name, craftstring)
 	PrefabFiles = PrefabFiles or {}
-	table.insert(PrefabFiles, name)
+	table.insert(PrefabFiles, prefab)
+
+	STRINGS.NAMES[string.upper(prefab)] = name or "Thingamabob"
+	STRINGS.RECIPE_DESC[string.upper(prefab)] = craftstring or "Thingamabob"
 end
 
 --- Registers an upgrade type for a material
@@ -370,6 +475,7 @@ function Articore:HideMenuPanel()
 		self.banner_root:Hide()
 	end)
 end
+
 
 -- ########## EXPORT ARTICORE ##########
 GLOBAL.Articore = Articore
