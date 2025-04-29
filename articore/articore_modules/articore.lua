@@ -102,6 +102,43 @@ function Articore:AddCharacterSkin(character, skin, name, description, quote, mo
 	table.insert(SKIN_AFFINITY_INFO[character], charname)
 end
 
+--- @param music (string) song path
+--- @param prefab (string) character prefab name
+function Articore:AddCharLobbyMusic(music, prefab)
+	AddClassPostConstruct("screens/redux/lobbyscreen", function(self, ...)
+		TheFrontEnd = GLOBAL.TheFrontEnd
+		if not TheFrontEnd then return end
+		if not music then return end
+
+		local root
+		local old_character
+		local old_OnUpdate = self.OnUpdate
+		self.OnUpdate = function(self, ...)
+			old_OnUpdate(self, ...)
+			root = self.panel and self.panel.character_scroll_list
+			if root then                                                     -- Some error checks
+				local character = root:GetCharacter()
+				if character and old_character ~= character and character == prefab then -- To prevent it from repeatively running the code too many times
+					if not TheFrontEnd:GetSound():PlayingSound("characterselect") then
+						TheFrontEnd:GetSound():PlaySound(music, "characterselect")
+					end
+					TheFrontEnd:GetSound():SetVolume("characterselect", 1)
+				else
+					if TheFrontEnd:GetSound():PlayingSound("characterselect") then
+						TheFrontEnd:GetSound():SetVolume("characterselect", 0)
+					end
+				end
+			end
+		end
+
+		self.old_stopmusic = self.StopLobbyMusic
+		self.StopLobbyMusic = function(self, ...)
+			self.old_stopmusic(self, ...)
+			TheFrontEnd:GetSound():KillSound("characterselect")
+		end
+	end)
+end
+
 --- Defines a new skin mode for a character
 --- @param name (string) Character name
 --- @param mode1 (string) Skin mode identifier
